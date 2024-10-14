@@ -25,20 +25,19 @@ class Test(TestCaseUI):
         """Перемещение сообщения в папку"""
 
         folder_to_move = 'папка для перемещения'
-        text_message = self.main.diaologs.item(contains_text=self.message).should_be(Displayed).text
 
-        self.main.diaologs.item(contains_text=text_message).select_menu_actions("Переместить")
+        self.main.diaologs.item(contains_text=self.message).should_be(Displayed).select_menu_actions("Переместить")
         self.move_panel.check_load()
         self.move_panel.move_dialog.row(contains_text=folder_to_move).click()
         self.move_panel.move_dialog.should_not_be(Displayed)
 
         folder = self.main.folders.row(contains_text=folder_to_move)
         folder.click()
-        self.main.marker_folders.should_be(Displayed)
-        self.main.diaologs.item(with_text=text_message).should_be(Displayed)
-        self.main.count_folder.should_be(ExactText('1'))
+        self.main.marker_folders(folder_to_move).should_be(Displayed)
+        self.main.diaologs.item(contains_text=self.message).should_be(Displayed)
+        self.main.count_folder(folder_to_move).should_be(ExactText('1'))
 
-        self.main.diaologs.item(contains_text=text_message).select_menu_actions("Переместить")
+        self.main.diaologs.item(contains_text=self.message).should_be(Displayed).select_menu_actions("Переместить")
         self.move_panel.check_load()
         self.move_panel.move_dialog.row(contains_text="Все сообщения").element('div').click()
         self.move_panel.move_dialog.should_not_be(Displayed)
@@ -47,11 +46,11 @@ class Test(TestCaseUI):
     def test_02_check_date(self):
         """Проверка даты сообщения"""
 
-        date_message = self.main.date_message.text
+        date_ms = self.main.date_message(self.message).text
         self.main.tabs.select("Чаты")
-        self.main.marker_tabs.should_be(Displayed)
         self.chats.chats.item(contains_text=self.message).should_be(Displayed)
-        self.chats.date_message.should_be(ExactText(date_message))
+        self.chats.date_message(self.message).should_be(ExactText(date_ms))
+        self.main.tabs.select(contains_text="Диалоги")
 
     def test_03_select_tag(self):
         """Пометить сообщение тегом"""
@@ -62,7 +61,7 @@ class Test(TestCaseUI):
         self.control_panel.panel.item(contains_text=test).click()
         self.control_panel.panel.should_not_be(Displayed)
 
-        self.main.count_tag.should_be(ExactText('1'))
+        self.main.count_tag(test).should_be(ExactText('1'))
         message.should_be(ContainsText(test))
 
         message.select_menu_actions("Пометить")
